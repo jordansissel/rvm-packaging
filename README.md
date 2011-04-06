@@ -6,7 +6,17 @@
 
 Requires fpm to package things. <https://github.com/jordansissel/fpm>
 
-## Example with jruby
+## Examle running with bundler deployment
+
+These steps assume you already built the ruby package you wanted from the
+examples further down on this page.
+
+Assuming you wrote an app and ran 'bundle install --deployment' and are now
+ready to deploy using ruby 1.9.2:
+
+    % GEM_PATH=vendor/bundle/ruby/1.9.1/ /opt/rvm/rubies/ruby-1.9.2-p180/bin/ruby your-app.rb
+
+## Example packaging jruby
 
     % bash package-ruby.sh jruby
     ...
@@ -30,7 +40,7 @@ Requires fpm to package things. <https://github.com/jordansissel/fpm>
     java-1.9.2
 
 
-## Example ruby 1.9.2
+## Example packaging ruby 1.9.2
 
     % bash package-ruby.sh ruby-1.9.2
     ...
