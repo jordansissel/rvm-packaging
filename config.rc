@@ -1,0 +1,20 @@
+PREFIX=/opt/rvm
+DESTDIR=$PWD/build
+
+export rvm_path=$DESTDIR/$PREFIX
+export rvm_prefix=$DESTDIR/$PREFIX
+export rvm_ignore_rvmrc=1
+
+install_rvm() {
+  curl -B "http://rvm.beginrescueend.com/install/rvm" | bash 
+
+  ## Hack the 'rvm' loader to use $PREFIX, not wherever it's currently installed
+  #(
+    #rvm_orig="$rvm_path/src/rvm/scripts/rvm"
+    #sed -ne 1p $rvm_orig
+    #echo "[ -z "\$rvm_path" ] && export rvm_path=$PREFIX"
+    #echo "[ -z "\$rvm_prefix" ] && export rvm_prefix=$PREFIX"
+    #echo "[ -z "\$rvm_ignore_rvmrc" ] && export rvm_ignore_rvmrc=1"
+    #sed -ne '2,$p' $rvm_orig
+  #) > $rvm_path/scripts/rvm
+}
