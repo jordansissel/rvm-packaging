@@ -1,5 +1,12 @@
 # Packaging rvm stuff for deployment
 
+The overal goal of this project is to help with deploying ruby apps. Solved here is the problem of packaging an rvm-provided ruby. Steps in general:
+
+* Forget about worrying about old versions of ruby.
+* Package up whatever version of ruby with this project
+* Package up your application (use bundler to vendor in the gem dependencies)
+* Deploy both to production.
+
 'package.sh' packages 'rvm' for deployment if you want it, not required to deploy.
 
 'package-ruby.sh' packages any ruby you choose to install with rvm.
