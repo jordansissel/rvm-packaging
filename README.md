@@ -13,7 +13,7 @@ The overal goal of this project is to help with deploying ruby apps. Solved here
 
 Requires fpm to package things. <https://github.com/jordansissel/fpm>
 
-## Examle running with bundler deployment
+## Example running with bundler deployment
 
 These steps assume you already built the ruby package you wanted from the
 examples further down on this page.
