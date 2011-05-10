@@ -6,7 +6,7 @@ export rvm_prefix=$DESTDIR/$PREFIX
 export rvm_ignore_rvmrc=1
 
 install_rvm() {
-  curl -B "http://rvm.beginrescueend.com/install/rvm" | bash 
+  curl -B "https://rvm.beginrescueend.com/install/rvm" | bash 
 
   ## Hack the 'rvm' loader to use $PREFIX, not wherever it's currently installed
   #(
