@@ -13,7 +13,35 @@ The overal goal of this project is to help with deploying ruby apps. Solved here
 
 Requires fpm to package things. <https://github.com/jordansissel/fpm>
 
-## Examle running with bundler deployment
+## Notes on deployment
+
+Because rvm assumes installing to $HOME/.rvm/stuff, there's a bunch of hackery
+this package-ruby.sh does to 'undo' the assumptions.
+
+For example, if you package ruby 1.9.2, the resulting package will want to
+install to /opt/somewhere, where rvm believes it is installed to somewhere like
+this:
+
+    % readelf -a ruby | grep 'Library'
+    0x000000000000000f (RPATH)              Library rpath: [/home/jls/rvm-packaging/build//opt/rvm/rubies/ruby-1.9.2-p180/lib]
+
+Obviously this is wrong. That path won't exist when we install the package to
+production. Until I figure out the right way to solve this, I've worked around
+it by having a 'runner' script that looks like this:
+
+    #!/bin/sh
+    ruby="ruby-1.9.2-p180"
+    export LD_LIBRARY_PATH=/opt/rvm/rubies/${ruby}/lib 
+    export GEM_HOME=./vendor/bundle/ruby/1.9.1/ 
+    export RUBYLIB=/opt/rvm/rubies/${ruby}/lib/ruby/1.9.1:/opt/rvm/rubies/${ruby}/lib/ruby/1.9.1/x86_64-linux/:./lib 
+    PATH=/opt/rvm/rubies/${ruby}/bin:${PATH}
+    ruby "$@"
+
+Then to run a script with our rvm-packaged thing, I do:
+
+    run.sh myscript.rb ...
+
+## Example running with bundler deployment
 
 These steps assume you already built the ruby package you wanted from the
 examples further down on this page.
@@ -81,4 +109,6 @@ ready to deploy using ruby 1.9.2:
          - :bulk_threshold => 1000
       - REMOTE SOURCES:
          - http://rubygems.org/
+
+
 
