@@ -67,6 +67,6 @@ fi
 # skip the 'src' dir, too, we don't want it.
 
 echo "Packaging up $ruby-$version"
-iteration=2
+[ -z "$iteration" ] && iteration=3
 fpm -s dir -t deb -C ./build -n rvm-${ruby}-${version} -v ${version}-${iteration} \
   opt/rvm/{gems,rubies,wrappers,environments,log,bin}/${rubyname}
