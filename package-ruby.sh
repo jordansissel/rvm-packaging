@@ -32,6 +32,7 @@ echo "ruby: $ruby"
 echo "version: $version"
 echo "name: $rubyname"
 
+# DESTDIR comes from 'config.rc'
 echo "patching rvm scripts to remove path '$DESTDIR/'"
 find $DESTDIR/$PREFIX/{wrappers,environments} -type f -print0 \
   | xargs -0n1 sed -i -e "s,$DESTDIR/,,g"
@@ -43,6 +44,29 @@ for i in $DESTDIR/$PREFIX/{rubies/${rubyname}/bin,wrappers/${rubyname}}/{erb,gem
   sed -i -e "s,$DESTDIR/,,g" $i
 done
 
+# Mangle the 'ruby' binary to fix the RPATH (LD_RUN_PATH) stuff.
+rubybin=$DESTDIR/$PREFIX/rubies/${rubyname}/bin/ruby
+echo "Checking if we need to patch the ruby binary; $rubybin"
+if readelf -d $rubybin | grep RPATH | grep -qF $DESTDIR  ; then
+  echo "patching ruby binary to use correct library path"
+  old_libpath=$(readelf -d $rubybin | grep RPATH | sed -re 's/.*\[(.*)\]/\1/')
+  fixed_libpath=$(echo "$old_libpath" | sed -e "s,$DESTDIR/,,g")
+  echo "Old: ${old_libpath}"
+  echo "New: ${fixed_libpath}"
+  export old_libpath
+  export fixed_libpath
+  # Replace the ld libpath with the fixed libpath, padded by nulls
+  ruby -p -e '
+    $_.gsub!(ENV["old_libpath"]) do |s|
+      ENV["fixed_libpath"] + ("\0" * (ENV["old_libpath"].size - ENV["fixed_libpath"].size))
+    end
+  ' $rubybin > $rubybin.patched
+fi
+
+
+# skip the 'src' dir, too, we don't want it.
+
 echo "Packaging up $ruby-$version"
-fpm -s dir -t deb -C ./build -n rvm-${ruby}-${version} -v ${version}-1 \
-  opt/rvm/{gems,rubies,wrappers,environments,log,src,bin}/${rubyname}
+iteration=2
+fpm -s dir -t deb -C ./build -n rvm-${ruby}-${version} -v ${version}-${iteration} \
+  opt/rvm/{gems,rubies,wrappers,environments,log,bin}/${rubyname}
